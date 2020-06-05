@@ -400,6 +400,15 @@ int callback_tty(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
           }
           if (spawn_process(pss) != 0) return 1;
           break;
+        case PING: {
+          // uv_buf_t b = uv_buf_init("pong", 4);
+          // int err = uv_write(req, (uv_stream_t *)&proc->pipe, &b, 1, write_cb);
+          // lwsl_notice("recieve ping from client");
+          unsigned char message[LWS_PRE + 16];
+          unsigned char *p = &message[LWS_PRE];
+          int l = sprintf((char *)p, "%s","PONG");
+          lws_write(wsi, p, (size_t)l+1, LWS_WRITE_TEXT);
+        } break;
         default:
           lwsl_warn("ignored unknown message type: %c\n", command);
           break;

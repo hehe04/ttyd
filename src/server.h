@@ -7,6 +7,7 @@
 #define INPUT '0'
 #define RESIZE_TERMINAL '1'
 #define JSON_DATA '{'
+#define PING 'P'
 
 // server message
 #define OUTPUT '0'

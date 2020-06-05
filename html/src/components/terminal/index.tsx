@@ -10,6 +10,7 @@ import { OverlayAddon } from './overlay';
 import { ZmodemAddon } from '../zmodem';
 
 import 'xterm/css/xterm.css';
+import { ninvoke } from 'q';
 
 interface TtydTerminal extends Terminal {
     fit(): void;
@@ -54,6 +55,7 @@ export class Xterm extends Component<Props> {
     private backoff: backoff.Backoff;
     private backoffLock = false;
     private reconnect = false;
+    private ping =null;
 
     constructor(props: Props) {
         super(props);
@@ -87,6 +89,7 @@ export class Xterm extends Component<Props> {
 
         window.addEventListener('resize', this.onWindowResize);
         window.addEventListener('beforeunload', this.onWindowUnload);
+        setInterval(()=>{this.refreshToken()},60*1000)//to refresh cookie_pame_token
     }
 
     componentWillUnmount() {
@@ -206,6 +209,13 @@ export class Xterm extends Component<Props> {
             fitAddon.fit();
         }
 
+        /** 连接后启动 PING，PONG 心跳 */
+        if (null === this.ping) {
+            /** 1分钟心跳一次，注意这个值需要设置的比 代理的 设置的值要小，不然被关闭了就没意义了。 */
+            this.ping = setInterval(() => {
+                socket.send("PING");
+            }, 30*1000)
+        }
         terminal.focus();
     }
 
@@ -219,6 +229,11 @@ export class Xterm extends Component<Props> {
         // 1000: CLOSE_NORMAL
         if (event.code !== 1000 && !backoffLock) {
             backoff.backoff();
+        }
+        /** 连接被关闭后停止 PING-PONG 心跳 */
+        if (null !== this.ping) {
+            clearInterval(this.ping)
+            this.ping = null
         }
     }
 
