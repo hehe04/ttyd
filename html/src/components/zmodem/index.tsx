@@ -8,6 +8,7 @@ import { Modal } from '../modal';
 
 interface Props {
     sender: (data: ArrayLike<number>) => void;
+    disablesz:boolean;
 }
 
 interface State {
@@ -41,7 +42,7 @@ export class ZmodemAddon extends Component<Props, State> implements ITerminalAdd
         this.terminal = terminal;
     }
 
-    dispose(): void {}
+    dispose(): void { }
 
     consume(data: ArrayBuffer) {
         const { sentry, handleError } = this;
@@ -110,6 +111,12 @@ export class ZmodemAddon extends Component<Props, State> implements ITerminalAdd
         if (this.session.type === 'send') {
             this.setState({ modal: true });
         } else {
+            if (this.props.disablesz){
+                //download is not allowed if it is set dissz=true on server
+                detection.deny();
+                this.terminal.writeln("sz is not allowed");
+                return
+            }
             receiveFile();
         }
     }
@@ -146,7 +153,6 @@ export class ZmodemAddon extends Component<Props, State> implements ITerminalAdd
                 })
                 .catch(e => handleError(e, 'receive'));
         });
-
         session.start();
     }
 

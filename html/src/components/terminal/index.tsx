@@ -55,7 +55,8 @@ export class Xterm extends Component<Props> {
     private backoff: backoff.Backoff;
     private backoffLock = false;
     private reconnect = false;
-    private ping =null;
+    private ping = null;
+    private disableSZ = true;
 
     constructor(props: Props) {
         super(props);
@@ -89,7 +90,7 @@ export class Xterm extends Component<Props> {
 
         window.addEventListener('resize', this.onWindowResize);
         window.addEventListener('beforeunload', this.onWindowUnload);
-        setInterval(()=>{this.refreshToken()},60*1000)//to refresh cookie_pame_token
+        setInterval(() => { this.refreshToken() }, 60 * 1000)//to refresh cookie_pame_token
     }
 
     componentWillUnmount() {
@@ -103,7 +104,7 @@ export class Xterm extends Component<Props> {
     render({ id }: Props) {
         return (
             <div id={id} ref={c => (this.container = c)}>
-                <ZmodemAddon ref={c => (this.zmodemAddon = c)} sender={this.sendData} />
+                <ZmodemAddon ref={c => (this.zmodemAddon = c)} sender={this.sendData} disablesz={this.disableSZ} />
             </div>
         );
     }
@@ -214,7 +215,7 @@ export class Xterm extends Component<Props> {
             /** 1分钟心跳一次，注意这个值需要设置的比 代理的 设置的值要小，不然被关闭了就没意义了。 */
             this.ping = setInterval(() => {
                 socket.send("PING");
-            }, 30*1000)
+            }, 30 * 1000)
         }
         terminal.focus();
     }
@@ -268,8 +269,13 @@ export class Xterm extends Component<Props> {
                         terminal.loadAddon(new WebglAddon());
                         console.log(`[ttyd] WebGL renderer enabled`);
                     } else {
-                        console.log(`[ttyd] option: ${key}=${preferences[key]}`);
-                        terminal.setOption(key, preferences[key]);
+                        if (key === "dissz") {
+                            this.disableSZ = preferences[key];
+                            this.setState({ disablesz: this.disableSZ });
+                            console.log(`[ttyd] option: ${key}=${preferences[key]}`);
+                        } else {
+                            terminal.setOption(key, preferences[key]);
+                        }
                     }
                 });
                 break;
