@@ -56,7 +56,7 @@ export class Xterm extends Component<Props> {
     private backoffLock = false;
     private reconnect = false;
     private ping = null;
-    private disableSZ = true;
+    private disableSZ = false;
 
     constructor(props: Props) {
         super(props);

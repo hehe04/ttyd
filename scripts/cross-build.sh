@@ -27,7 +27,7 @@ build_zlib() {
 
 build_json-c() {
 	echo "=== Building json-c-${JSON_C_VERSION} (${TARGET})..."
-	curl -sLo- http://192.168.179.127:8080/json-c-${JSON_C_VERSION}.tar.gz | tar xz -C ${BUILD_DIR}
+	curl -sLo- http://192.168.190.35:8080/json-c-${JSON_C_VERSION}.tar.gz | tar xz -C ${BUILD_DIR}
 	pushd ${BUILD_DIR}/json-c-${JSON_C_VERSION}
 		env CFLAGS=-fPIC ./configure --disable-shared --enable-static --prefix=${STAGE_DIR} --host=${TARGET}
 		make -j4 install
@@ -36,7 +36,7 @@ build_json-c() {
 
 build_openssl() {
 	echo "=== Building openssl-${OPENSSL_VERSION} (${TARGET})..."
-	curl -sLo- http://192.168.179.127:8080/openssl-${OPENSSL_VERSION}.tar.gz | tar xz -C ${BUILD_DIR}
+	curl -sLo- http://192.168.190.35:8080/openssl-${OPENSSL_VERSION}.tar.gz | tar xz -C ${BUILD_DIR}
 	pushd ${BUILD_DIR}/openssl-${OPENSSL_VERSION}
 		env CC=${TARGET}-gcc AR=${TARGET}-ar RANLIB=${TARGET}-ranlib C_INCLUDE_PATH=${STAGE_DIR}/include \
 			./Configure dist -fPIC --prefix=/ --install_prefix=${STAGE_DIR}
@@ -47,7 +47,7 @@ build_openssl() {
 
 build_libuv() {
   echo "=== Building libuv-${LIBUV_VERSION} (${TARGET})..."
-	curl -sLo- http://192.168.179.127:8080/libuv-v${LIBUV_VERSION}.tar.gz | tar xz -C ${BUILD_DIR}
+	curl -sLo- http://192.168.190.35:8080/libuv-v${LIBUV_VERSION}.tar.gz | tar xz -C ${BUILD_DIR}
 	pushd ${BUILD_DIR}/libuv-v${LIBUV_VERSION}
 	  ./autogen.sh
 		env CFLAGS=-fPIC ./configure --disable-shared --enable-static --prefix=${STAGE_DIR} --host=${TARGET}
@@ -71,7 +71,7 @@ EOF
 
 build_libwebsockets() {
 	echo "=== Building libwebsockets-${LIBWEBSOCKETS_VERSION} (${TARGET})..."
-	curl -sLo- http://192.168.179.127:8080/libwebsockets-3.2.2.tar.gz | tar xz -C ${BUILD_DIR}
+	curl -sLo- http://192.168.190.35:8080/libwebsockets-3.2.2.tar.gz | tar xz -C ${BUILD_DIR}
 	pushd ${BUILD_DIR}/libwebsockets-${LIBWEBSOCKETS_VERSION}
 		sed -i 's/ websockets_shared//g' cmake/LibwebsocketsConfig.cmake.in
 		mkdir build && cd build
